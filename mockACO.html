@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body style="background:grey;">
+    <H1 style=" margin: 28px auto; text-align: center; display: block;">This is a mock for ACO</H1><br/>
+    <button onclick="sendToParent()" style="display: block; margin: auto;">Envoyer postmessage</button>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        var message, idContrat, imei;
+        $(document).ready(function() {
+
+            var url_string = window.location.href;
+            var url = new URL(url_string);
+            idContrat = url.searchParams.get("idContrat");
+            imei = url.searchParams.get("imei");
+
+            console.log('Mock de ACO => donnes recuperes de la url: imei ' + imei + ' // idContrat ' + idContrat);
+
+        });
+
+
+        window.addEventListener("message", function(event) {
+            var vfOrigin = "https://bouyguestelecom--devw2--c.cs109.visual.force.com";
+
+            if (event.origin !== vfOrigin) {
+                // Not the expected origin: Reject the message!
+                return;
+            }
+            //console.log(event.data);
+
+            let eventObject = JSON.parse(JSON.stringify(event.data));
+            idContrat = eventObject.args.contractId;
+            imei = eventObject.args.imei;
+            console.log('Mock de ACO => donnes recuperes par postMessage ' + imei + ' // idContrat ' + idContrat);
+        });
+
+        function sendToParent() {
+            message = {};
+            message.command = "validateGalet";
+            message.contractId = idContrat;
+            message.idpu = "007";
+            message.imei = imei;
+            message.statut = "excelent";
+            var lexOrigin = 'https://bouyguestelecom--devw2--c.cs109.visual.force.com';
+            parent.postMessage(message, lexOrigin);
+            console.log('Mock de ACO => postMessage envoyé');
+        }
+    </script>
+</body>
+
+</html>
